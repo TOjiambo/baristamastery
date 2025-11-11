@@ -1,0 +1,11 @@
+/* @license GPL-2.0-or-later https://www.drupal.org/licensing/faq */
+
+@media (min-width:576px) {
+    .counteract-margin-nav-links-sm {
+        margin-right: -.6rem;
+    }
+}
+
+#header>header#header_arizona {
+    min-height: 50px;
+}

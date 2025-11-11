@@ -1,0 +1,68 @@
+/* @license GPL-2.0-or-later https://www.drupal.org/licensing/faq */
+(function() {
+    const settingsElement = document.querySelector('head > script[type="application/json"][data-drupal-selector="drupal-settings-json"], body > script[type="application/json"][data-drupal-selector="drupal-settings-json"]');
+    window.drupalSettings = {};
+    if (settingsElement !== null) window.drupalSettings = JSON.parse(settingsElement.textContent);
+})();;
+var script = document.createElement('script');
+script.src = "https://cdn.optimizely.com/js/27293870253.js";
+document.head.appendChild(script);;
+(() => {
+    function calculateScrollbarWidth() {
+        document.documentElement.style.setProperty('--scrollbar-width', `${window.innerWidth-document.documentElement.clientWidth}px`);
+    }
+
+    function pushSidebarsDown() {
+        const contentRegion = document.querySelector('main.main-content');
+        if (contentRegion !== null) {
+            const allFullWidthElements = contentRegion.querySelectorAll('.paragraph.full-width-background');
+            if (allFullWidthElements.length === 0) return;
+            const lastFullWidthElement = allFullWidthElements[allFullWidthElements.length - 1];
+            const contentRegionPosition = contentRegion.getBoundingClientRect();
+            const style = window.getComputedStyle(lastFullWidthElement, '');
+            const bottomMargin = parseFloat(style.marginBottom);
+            const contentRegionTop = contentRegionPosition.top;
+            const lastFullWidthElementPosition = lastFullWidthElement.getBoundingClientRect();
+            const lastFullWidthElementBottom = lastFullWidthElementPosition.bottom;
+            const sidebarTopMargin = lastFullWidthElementBottom - contentRegionTop + bottomMargin;
+            if (sidebarTopMargin) document.documentElement.style.setProperty('--sidebar-top-margin', `${sidebarTopMargin}px`);
+        }
+    }
+
+    function calculateFullWidthNegativeMargins() {
+        const contentRegion = document.querySelectorAll('.block-system-main-block');
+        if (contentRegion.length > 0) {
+            const contentRegionPosition = contentRegion[0].getBoundingClientRect();
+            const distanceFromLeft = contentRegionPosition.left;
+            const distanceFromRight = contentRegionPosition.right;
+            const negativeLeftMargin = 0 - distanceFromLeft;
+            const negativeRightMargin = distanceFromRight - document.documentElement.clientWidth;
+            document.documentElement.style.setProperty('--full-width-left-distance', `${negativeLeftMargin}px`);
+            document.documentElement.style.setProperty('--full-width-right-distance', `${negativeRightMargin}px`);
+        }
+        const contentTopAndBottomBlocks = document.querySelectorAll('.region-content-top > .block, .region-content-bottom > .block');
+        if (contentTopAndBottomBlocks.length > 0) {
+            const negativeAutoMargin = -(document.documentElement.clientWidth - contentTopAndBottomBlocks[0].getBoundingClientRect().width) / 2;
+            document.documentElement.style.setProperty('--full-width-auto-distance', `${negativeAutoMargin}px`);
+        }
+    }
+
+    function calculateFullWidthSidebarWidth() {
+        const sidebarRegion = document.querySelectorAll('.sidebar');
+        if (sidebarRegion.length > 0) {
+            const sidebarRegionPosition = sidebarRegion[0].getBoundingClientRect();
+            const sidebarWidth = sidebarRegionPosition.width;
+            document.documentElement.style.setProperty('--full-width-sidebar-width', `${sidebarWidth}px`);
+        }
+    }
+
+    function setFullWidthLayout() {
+        calculateScrollbarWidth();
+        calculateFullWidthNegativeMargins();
+        calculateFullWidthSidebarWidth();
+        pushSidebarsDown();
+    }
+    document.addEventListener('DOMContentLoaded', setFullWidthLayout);
+    window.addEventListener('resize', setFullWidthLayout);
+    window.addEventListener('azVideoPlay', setFullWidthLayout);
+})();;
